@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html  lang="en">
+
+<head>
+
+<title>ANTI-FOMO-FEED</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="stylesheet/styles.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+
+
+<section class="items">
+  <ul class="polaroid">
+
+    <% previewData.forEach(function(previewData) { %>
+      <li class="card">
+        <div class="container">
+          <figure>
+            <img src=<%= previewData.img %> >
+            </figure>
+           
+          <article class="description">
+            <a href=<%= previewData.link %>> <h3><%= previewData.title %></h3></a>
+            <p><%= previewData.description %></p>
+          </article>
+          <div class="btn-container">
+            <div class="btn-save"><i class="fas fa-share-square"></i></div>
+            <div class="btn-delete"><i class="fas fa-trash"></i></div>
+          </div>
+        </div>
+      </li>
+    <% }); %>
+
+  </ul>
+</section>
+</body>
+</html>

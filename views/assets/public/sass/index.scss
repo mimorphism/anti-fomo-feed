@@ -1,0 +1,70 @@
+
+@import 'variables';
+
+/* Use the variables */
+body {
+  margin:25px;
+  background-color: var(--bgcolor);
+  color: var(--textcolor);
+  font-size: var(--fontsize);
+}
+
+.btn-warning,btn-warning:not(:disabled):not(.disabled).active, 
+.btn-warning:not(:disabled):not(.disabled):active,
+ .show>.btn-warning.dropdown-toggle{
+bottom: 66%;
+background-color: transparent;
+cursor: pointer;
+display: flex;
+justify-content: flex-end;
+position: relative;
+margin-right: 3px;
+background-color: transparent;
+  cursor:pointer;
+  &:hover{
+    background-color: transparent;
+  }
+
+  i.far{
+    display:flex;
+    justify-content:center;
+  }
+  
+}
+.polaroid { 
+  list-style: none;
+ 
+  .card{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin-bottom: 25px;
+    background-color: var(--base-white-color);
+    width: 500px;
+    min-height:350px;
+    margin-right: 1em;
+  }
+    
+
+  figure img {
+    height: 300px;
+    object-fit: cover;
+    background-repeat: no-repeat;
+    top: 1em;
+    position: relative;
+  }
+
+}
+
+.container {
+  text-align: center;
+  padding: 10px 20px;
+}
+
+.btn-save-link,
+.btn-delete{
+  width: 92px;
+    height: 29px;
+    font-size: 12px;
+}

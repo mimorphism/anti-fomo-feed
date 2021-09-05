@@ -1,0 +1,89 @@
+/* Define standard variables and values for website */
+:root {
+  --bgcolor: rgb(0, 0, 0);
+  --textcolor: darkblue;
+  --fontsize: 18px;
+  --base-white-color:#ffffff;
+  --base-black-color:#000000;
+}
+
+/* Use the variables */
+body {
+  margin: 25px;
+  background-color: var(--bgcolor);
+  color: var(--textcolor);
+  font-size: var(--fontsize);
+}
+
+.btn-warning, btn-warning:not(:disabled):not(.disabled).active,
+.btn-warning:not(:disabled):not(.disabled):active,
+.show > .btn-warning.dropdown-toggle {
+  
+  background-color: transparent;
+  top:5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+ 
+  cursor: pointer;
+}
+
+.btn-warning:hover, btn-warning:not(:disabled):not(.disabled).active:hover,
+.btn-warning:not(:disabled):not(.disabled):active:hover,
+.show > .btn-warning.dropdown-toggle:hover {
+  background-color: transparent;
+}
+
+.btn-warning i.far, btn-warning:not(:disabled):not(.disabled).active i.far,
+.btn-warning:not(:disabled):not(.disabled):active i.far,
+.show > .btn-warning.dropdown-toggle i.far {
+  display: flex;
+  justify-content: center;
+}
+
+.polaroid {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.polaroid .card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin-bottom: 25px;
+  background-color: var(--base-white-color);
+  width:33.33%;
+  min-height: 350px;
+  margin-right: 1em;
+
+  flex-direction: row;
+}
+
+.polaroid figure{
+  display:flex;
+  justify-content: center;
+  margin-bottom:3em;
+}
+.polaroid figure img {
+  height: 300px;
+  object-fit: cover;
+  background-repeat: no-repeat;
+  top: 1em;
+  position: relative;
+}
+article.description {
+  padding: 1em 2em;
+}
+.btn-container{
+  display: flex;
+  justify-content: center;
+  line-height:2.5;
+}
+
+.fas{
+  color:var(--base-black-color);
+  font-size: var(--fontsize);
+  margin-right:2em;
+}
+/*# sourceMappingURL=styles.css.map */
