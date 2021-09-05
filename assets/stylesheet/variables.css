@@ -1,0 +1,9 @@
+/* Define standard variables and values for website */
+:root {
+  --bgcolor: lightblue;
+  --textcolor: darkblue;
+  --fontsize: 18px;
+  --base-white-color:#ffffff;
+  --base-black-color:#000000;
+}
+/*# sourceMappingURL=variables.css.map */
