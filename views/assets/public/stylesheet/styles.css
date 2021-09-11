@@ -1,8 +1,10 @@
 /* Define standard variables and values for website */
 :root {
-  --bgcolor: rgb(0, 0, 0);
-  --textcolor: darkblue;
-  --fontsize: 18px;
+  --bgcolor: #243447;
+  --bgcolor-2 :#284498;
+  --textcolor:  #FBDECB;
+  --fontsize: 15px;
+  --fontsize-2: 18px;
   --base-white-color:#ffffff;
   --base-black-color:#000000;
 }
@@ -10,7 +12,7 @@
 /* Use the variables */
 body {
   margin: 25px;
-  background-color: var(--bgcolor);
+  background-color: var(--base-black-color);
   color: var(--textcolor);
   font-size: var(--fontsize);
 }
@@ -52,10 +54,11 @@ body {
 .polaroid .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-bottom: 25px;
-  background-color: var(--base-white-color);
+  background-color: var(--bgcolor);
   width:33.33%;
   min-height: 350px;
   margin-right: 1em;
+ 
 
   flex-direction: row;
 }
@@ -64,17 +67,31 @@ body {
   display:flex;
   justify-content: center;
   margin-bottom:3em;
+  height:286px;
+ 
 }
 .polaroid figure img {
-  height: 300px;
+  height:100%;
+  width:100%;
   object-fit: cover;
   background-repeat: no-repeat;
   top: 1em;
   position: relative;
 }
-article.description {
+.desc,.tittle {
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   padding: 1em 2em;
+  line-height: 1.2;
 }
+
+.tittle{
+  min-height:200px
+}
+
 .btn-container{
   display: flex;
   justify-content: center;
@@ -83,7 +100,14 @@ article.description {
 
 .fas{
   color:var(--base-black-color);
-  font-size: var(--fontsize);
-  margin-right:2em;
+  font-size: var(--fontsize-2);
+  padding:1em;
+}
+
+@media only screen and (max-width: 600px) {
+  .polaroid .card {
+    flex-direction: column;
+    width:100%;
+  }
 }
 /*# sourceMappingURL=styles.css.map */
