@@ -72,7 +72,7 @@ const getImg = async (page, uri) => {
         return imgs[0].src;
       }
     }
-    return null;
+    return 'images/404NOTFOUND.png';
   });
   return img;
 };
@@ -101,7 +101,7 @@ const getTitle = async (page) => {
     if (h2 != null && h2.length > 0) {
       return h2;
     }
-    return null;
+    return 'No Title';
   });
   return title;
 };
@@ -125,7 +125,7 @@ const getDescription = async (page) => {
       return metaDescription.content;
     }
     let paragraphs = document.querySelectorAll("p");
-    let fstVisibleParagraph = null;
+    let fstVisibleParagraph = 'No Description';
     for (let i = 0; i < paragraphs.length; i++) {
       if (
         // if object is visible in dom
@@ -151,9 +151,9 @@ const getDomainName = async (page, uri) => {
     if (ogUrlMeta != null && ogUrlMeta.content.length > 0) {
       return ogUrlMeta.content;
     }
-    return null;
+    return 'No Domain';
   });
-  return domainName != null
+  return domainName != 'No Domain'
     ? new URL(domainName).hostname.replace("www.", "")
     : new URL(uri).hostname.replace("www.", "");
 };
@@ -178,24 +178,26 @@ module.exports = async (
   const page = await browser.newPage();
   page.setUserAgent(puppeteerAgent);
 
-  await page.goto(uri);
-  await page.exposeFunction("request", request);
-  await page.exposeFunction("urlImageIsAccessible", urlImageIsAccessible);
-
   const obj = {};
-
   try
   {
+    await page.goto(uri).catch(() => null);
+    await page.exposeFunction("request", request);
+    await page.exposeFunction("urlImageIsAccessible", urlImageIsAccessible);
+
+    
+
     obj.img = await getImg(page, uri).catch(() => null);
     obj.title = await getTitle(page).catch(() => null);
     obj.description = await getDescription(page).catch(() => null);
     obj.domain = await getDomainName(page, uri).catch(() => null);
-    obj.link = uri
+    await page.close();
     await browser.close();
   }
   catch (error) {
     console.error(error);
+    await page.close();
+    await browser.close();
   }
-  
   return obj;
 };
