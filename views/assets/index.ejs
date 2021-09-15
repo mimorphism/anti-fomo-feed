@@ -17,25 +17,21 @@
 </head>
 <body>
 
-
-
 <section class="items">
   <ul class="polaroid">
-
-    <% previewData.forEach(function(previewData) { %>
+    <% data.forEach(function(data) { %>
       <li class="card">
         <div class="container">
           <figure>
-            <img src=<%= previewData.img %> >
+            <img src=<%= data.processedPreviewData.img %> >
             </figure>
-           
           <article>
-            <a href=<%= previewData.link %>> <h3 class="tittle"><%= previewData.title %></h3></a>
-            <p class="desc"><%= previewData.description %></p>
+            <a href=<%= data.link %>> <h3 class="tittle"><%= data.processedPreviewData.title %></h3></a>
+            <p class="desc"><%= data.processedPreviewData.description %></p>
           </article>
           <div class="btn-container">
-            <div class="btn-save"><i class="fas fa-share-square"></i></div>
-            <div class="btn-delete"><i class="fas fa-trash"></i></div>
+            <div class="btn-save" data-linkid=<%= data.linkId %>><i class="fas fa-share-square"></i></div>
+            <div class="btn-delete" data-linkid=<%= data.linkId %>><i class="fas fa-trash"></i></div>
           </div>
         </div>
       </li>
@@ -43,5 +39,7 @@
 
   </ul>
 </section>
+<script src="js/client.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </body>
 </html>
