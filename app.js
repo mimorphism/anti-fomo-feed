@@ -16,16 +16,22 @@ var cors = require('cors')
 app.set('view engine', 'ejs');
 app.use(express.static('views/assets/public'));
 app.use(cors());
-app.use(express.json()); //Used to parse JSON bodies
+app.use(express.json()); 
+app.engine('html', require('ejs').renderFile);
 
 
 // await processLogFile();
 
-app.get('/', async(req, res) => {
+app.get('/', (req, res) => {
 
-  const data = await initializePage();
-  res.render('assets/index', {data:data})
+  res.render('assets/loading.html')
   })
+
+app.get('/generateFeed', async(req, res) =>
+{
+const data = await initializePage();
+res.render('assets/index', {data:data})
+})
 
 app.listen(port, () => {
   console.log(`anti-fomo-feed running at http://localhost:${port}`)
@@ -37,6 +43,7 @@ app.post('/updateLink', async(req, res) => {
   await updateLink(req.body.linkId, req.body.opType);
   res.end('{"success" : "Successfully updated link", "status" : 200}');
   })
+
 
 
 async function updateLink(linkId, operationType)
@@ -57,7 +64,7 @@ async function updateLink(linkId, operationType)
 
   try
   {
-    const queryResult = await db.query(query);
+    const queryResult = await db.query(query, values);
     return queryResult;
   }catch(e)
   {
@@ -74,7 +81,7 @@ async function updateLink(linkId, operationType)
 async function performQuery()
 {
 
-const query = 'SELECT * FROM links WHERE IORDER BY RANDOM() LIMIT 2'
+const query = 'SELECT * FROM links ORDER BY RANDOM() LIMIT 2'
 // const query = 'UPDATE links SET is_viewed = true WHERE ';
 // const query = 'SELECT * FROM links ORDER BY link_id LIMIT 5'
 
@@ -108,8 +115,6 @@ async function initializePage()
       }
       console.log(previewData)
       const query = 'UPDATE links SET is_viewed = true WHERE link_id = any($1)';
-      // const query = 'SELECT * FROM links ORDER BY link_id LIMIT 5'
-
      await db.query(query, [linkIdList]);
 
   return previewData
