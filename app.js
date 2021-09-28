@@ -8,7 +8,11 @@ const LOG_FILE_LOCATION = 'testong.txt'
 var fs = require('fs')
 var es = require('event-stream');
 var cors = require('cors')
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
+const httpServer = createServer(app);
+const io = new Server(httpServer, { /* options */ });
 
 
 // const LOG_FILE_LOCATION = 'C:/Users/USER/AppData/Roaming/HexChat/url.log'
@@ -19,11 +23,13 @@ app.use(cors());
 app.use(express.json()); 
 app.engine('html', require('ejs').renderFile);
 
+httpServer.listen(port, () => {
+  console.log(`anti-fomo-feed running at http://localhost:${port}`)
+})
 
-// await processLogFile();
+
 
 app.get('/', (req, res) => {
-
   res.render('assets/loading.html')
   })
 
@@ -33,9 +39,7 @@ const data = await initializePage();
 res.render('assets/index', {data:data})
 })
 
-app.listen(port, () => {
-  console.log(`anti-fomo-feed running at http://localhost:${port}`)
-})
+
 
 app.post('/updateLink', async(req, res) => {
 
@@ -71,20 +75,15 @@ async function updateLink(linkId, operationType)
     console.log(e)
 
   }
-  
- 
-  
-  
+
 }
   
 
 async function performQuery()
 {
-
-const query = 'SELECT * FROM links ORDER BY RANDOM() LIMIT 2'
+const query = 'SELECT * FROM links ORDER BY RANDOM() LIMIT 10'
 // const query = 'UPDATE links SET is_viewed = true WHERE ';
 // const query = 'SELECT * FROM links ORDER BY link_id LIMIT 5'
-
 const queryResult = await db.query(query);
   return queryResult;
 }
@@ -100,10 +99,9 @@ async function initializePage()
 
   for(let i =0;i<queryResult.rows.length;i++)
       {
-        console.log("Processing row " + i)
+        console.time('Processing row')
          processedPreviewData[i] = await generateLinkPreview(queryResult.rows[i].link)
-         completeLinkInfo[i] = 
-        {
+         completeLinkInfo[i] = {
           processedPreviewData: processedPreviewData[i],
           linkId: queryResult.rows[i].link_id,
           link: queryResult.rows[i].link,
@@ -111,12 +109,14 @@ async function initializePage()
           savedForLater: queryResult.rows[i].saved_for_later
         }
         previewData.push(completeLinkInfo[i]);
+        
         linkIdList.push(queryResult.rows[i].link_id)
-      }
+       console.timeEnd('Processing row')
+        fireLoadingProgress((i+1)*10);
+       }
       console.log(previewData)
       const query = 'UPDATE links SET is_viewed = true WHERE link_id = any($1)';
      await db.query(query, [linkIdList]);
-
   return previewData
 }
 
@@ -165,6 +165,13 @@ try {
 console.log(err.stack)
 }
 }
+
+function fireLoadingProgress(percentage) {
+  return new Promise(function(resolve, reject) {
+    io.emit("loading", percentage);
+  });
+}
+
 
 process.on('SIGINT', function() {
   console.log( "\nGracefully shutting down from SIGINT (Ctrl-C)" );
