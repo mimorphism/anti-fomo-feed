@@ -45,33 +45,33 @@ const getImg = async (page, uri) => {
       return twitterImg.content;
     }
 
-    let imgs = Array.from(document.getElementsByTagName("img"));
-    if (imgs.length > 0) {
-      imgs = imgs.filter((img) => {
-        let addImg = true;
-        if (img.naturalWidth > img.naturalHeight) {
-          if (img.naturalWidth / img.naturalHeight > 3) {
-            addImg = false;
-          }
-        } else {
-          if (img.naturalHeight / img.naturalWidth > 3) {
-            addImg = false;
-          }
-        }
-        if (img.naturalHeight <= 50 || img.naturalWidth <= 50) {
-          addImg = false;
-        }
-        return addImg;
-      });
-      if (imgs.length > 0) {
-        imgs.forEach((img) =>
-          img.src.indexOf("//") === -1
-            ? (img.src = `${new URL(uri).origin}/${img.src}`)
-            : img.src
-        );
-        return imgs[0].src;
-      }
-    }
+    // let imgs = Array.from(document.getElementsByTagName("img"));
+    // if (imgs.length > 0) {
+    //   imgs = imgs.filter((img) => {
+    //     let addImg = true;
+    //     if (img.naturalWidth > img.naturalHeight) {
+    //       if (img.naturalWidth / img.naturalHeight > 3) {
+    //         addImg = false;
+    //       }
+    //     } else {
+    //       if (img.naturalHeight / img.naturalWidth > 3) {
+    //         addImg = false;
+    //       }
+    //     }
+    //     if (img.naturalHeight <= 50 || img.naturalWidth <= 50) {
+    //       addImg = false;
+    //     }
+    //     return addImg;
+    //   });
+    //   if (imgs.length > 0) {
+    //     imgs.forEach((img) =>
+    //       img.src.indexOf("//") === -1
+    //         ? (img.src = `${new URL(uri).origin}/${img.src}`)
+    //         : img.src
+    //     );
+    //     return imgs[0].src;
+    //   }
+    // }
     return 'images/404NOTFOUND.png';
   });
   return img;
@@ -80,14 +80,19 @@ const getImg = async (page, uri) => {
 const getTitle = async (page) => {
   const title = await page.evaluate(() => {
     const ogTitle = document.querySelector('meta[property="og:title"]');
+    console.log(ogTitle)
     if (ogTitle != null && ogTitle.content.length > 0) {
       return ogTitle.content;
     }
     const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    console.log(twitterTitle)
+
     if (twitterTitle != null && twitterTitle.content.length > 0) {
       return twitterTitle.content;
     }
     const docTitle = document.title;
+    console.log(docTitle)
+
     if (docTitle != null && docTitle.length > 0) {
       return docTitle;
     }
@@ -158,10 +163,45 @@ const getDomainName = async (page, uri) => {
     : new URL(uri).hostname.replace("www.", "");
 };
 
+const waitTillHTMLRendered = async (page, timeout = 30000) => {
+  const checkDurationMsecs = 1000;
+  const maxChecks = timeout / checkDurationMsecs;
+  let lastHTMLSize = 0;
+  let checkCounts = 1;
+  let countStableSizeIterations = 0;
+  const minStableSizeIterations = 3;
+
+  while(checkCounts++ <= maxChecks){
+    let html = await page.content();
+    let currentHTMLSize = html.length; 
+
+    let bodyHTMLSize = await page.evaluate(() => document.body.innerHTML.length);
+
+    console.log('last: ', lastHTMLSize, ' <> curr: ', currentHTMLSize, " body html size: ", bodyHTMLSize);
+
+    if(lastHTMLSize != 0 && currentHTMLSize == lastHTMLSize) 
+      countStableSizeIterations++;
+    else 
+      countStableSizeIterations = 0; //reset the counter
+
+    if(countStableSizeIterations >= minStableSizeIterations) {
+      console.log("Page rendered fully..");
+      break;
+    }
+
+    lastHTMLSize = currentHTMLSize;
+    await page.waitFor(checkDurationMsecs);
+  }  
+};
+
 module.exports = async (
   uri,
   puppeteerArgs = [],
-  puppeteerAgent = "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+//   puppeteerAgent = "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+//   executablePath
+// ) => {
+//   puppeteer.use(pluginStealth());
+puppeteerAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36",
   executablePath
 ) => {
   puppeteer.use(pluginStealth());
@@ -174,23 +214,25 @@ module.exports = async (
     params["executablePath"] = executablePath;
   }
 
-  const browser = await puppeteer.launch(params);
+  // const browser = await puppeteer.launch(params);
+  const browser = await puppeteer.launch({args: ["--proxy-server='direct://'", '--proxy-bypass-list=*']});
   const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(40000);
   page.setUserAgent(puppeteerAgent);
 
   const obj = {};
   try
   {
-    await page.goto(uri).catch(() => null);
+    // await page.goto(uri).catch(() => null);
+    await page.goto(uri, { waitUntil: 'networkidle2' });
+    // await waitTillHTMLRendered(page);
     await page.exposeFunction("request", request);
     await page.exposeFunction("urlImageIsAccessible", urlImageIsAccessible);
-
-    
 
     obj.img = await getImg(page, uri).catch(() => null);
     obj.title = await getTitle(page).catch(() => null);
     obj.description = await getDescription(page).catch(() => null);
-    obj.domain = await getDomainName(page, uri).catch(() => null);
+    obj.link = page.url();
     await page.close();
     await browser.close();
   }
